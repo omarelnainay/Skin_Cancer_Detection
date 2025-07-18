@@ -1,5 +1,6 @@
 # Skin_Cancer_Detection
 Skin Cancer Detection Model made by Omar Elnainay, Anas Radwan, Arsany Ehab
+
 🧠 Skin Cancer Detection using TensorFlow & CNN
 This project uses Convolutional Neural Networks (CNNs) with TensorFlow to automatically classify skin lesion images as either benign or malignant. Leveraging deep learning techniques, the model is trained on dermatology image datasets to assist in early skin cancer detection, particularly melanoma.
 
