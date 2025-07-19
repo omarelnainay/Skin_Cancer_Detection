@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Skin Cancer Detection</title>
+  </head>
+  <body>
+    <h2>Upload Skin Lesion Image</h2>
+    <form action="/" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+      <h3>Prediction: {{ prediction }}</h3>
+      <img src="{{ image_url }}" width="224">
+    {% endif %}
+  </body>
+</html>
