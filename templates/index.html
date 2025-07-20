@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+
     <title>Skin Cancer Detection</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
@@ -182,10 +183,8 @@
       </form>
 
         <div class="prediction-result">
-          <h3><i class="fas fa-chart-line"></i> Analysis Result: {{ prediction }}</h3>
-          {% if image_url %}
+          <h3><i class="fas fa-chart-line"></i> Analysis Result: </h3>
             <img src="{{ image_url }}" class="prediction-image" width="224">
-          {% endif %}
 
   </body>
 </html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Skin Cancer Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <div class="container">
+      <h2><i class="fas fa-microscope"></i> Skin Cancer Detection</h2>
+      <form action="/" method="POST" enctype="multipart/form-data">
+        <div class="upload-area">
+          <i class="fas fa-cloud-upload-alt upload-icon"></i>
+          <input type="file" name="file" class="file-input" id="file-input">
+          <label for="file-input" class="file-label">Choose an image file</label>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-search"></i> Analyze Image
+        </button>
+      </form>
+
+        <div class="prediction-result">
+          <h3><i class="fas fa-chart-line"></i> Analysis Result: {{ prediction }}</h3>
+          <img src="{{ image_url }}" class="prediction-image" width="224">
+
+  </body>
+</html>
