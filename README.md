@@ -16,8 +16,6 @@ Evaluation using accuracy, precision, recall, and confusion matrix
 
 Optional transfer learning with pretrained models like MobileNet or ResNet
 
-🖼 Dataset
-The model is trained on the ISIC Skin Lesion Dataset, which contains high-resolution dermatoscopic images labeled by medical experts.
 
 🛠 Tech Stack
 Python
