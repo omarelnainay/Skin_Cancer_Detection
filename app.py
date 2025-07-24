@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 import numpy as np
 from flask import Flask, render_template, request
@@ -7,12 +6,10 @@ from tensorflow.keras.preprocessing import image
 import keras
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'  # Change to a valid directory name
-
-# Load the trained model
+app.config['UPLOAD_FOLDER'] = 'static/uploads'  
 model = load_model('skin_cancer_cnn.h5')
 
-TARGET_SIZE = (224, 224)  # Change if your model expects a different input size
+TARGET_SIZE = (224, 224)
 
 def preprocess_image(img_path):
     img = image.load_img(img_path, target_size=TARGET_SIZE)
@@ -29,15 +26,11 @@ def index():
     if request.method == 'POST':
         img_file = request.files['image']
         if img_file:
-            # Save image
             img_path = os.path.join(app.config['UPLOAD_FOLDER'], img_file.filename)
             img_file.save(img_path)
 
-            # Predict
             img = preprocess_image(img_path)
-            result = model.predict(img)[0][0]  # Get scalar prediction
-
-            # Threshold for binary classification
+            result = model.predict(img)[0][0] 
             prediction = "Cancer" if result >= 0.5 else "Non-Cancer"
             image_url = img_path
 
@@ -55,8 +48,7 @@ import numpy as np
 import os
 
 app = Flask(__name__)
-model = load_model("skin_cancer_cnn.h5")  # Load your trained model
-
+model = load_model("skin_cancer_cnn.h5") 
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -80,4 +72,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
->>>>>>> 32f768db5ce2263109e8f1c77d5662efe3305e9c
