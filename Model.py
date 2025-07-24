@@ -29,13 +29,12 @@ else:
 
 TRAIN_DIR = "train"
 TEST_DIR = "test"
-# Image size and batch size 
-IMG_SIZE = (224, 224)  # Optimal size for EfficientNetB0
+
+IMG_SIZE = (224, 224)  
 BATCH_SIZE = 32
 
-# Data Augmentation for Training
 train_datagen = ImageDataGenerator(
-    rescale=1./255,  # Normalize pixel values to [0, 1]
+    rescale=1./255,  
     rotation_range=20,
     width_shift_range=0.2,
     height_shift_range=0.2,
@@ -44,18 +43,17 @@ train_datagen = ImageDataGenerator(
     horizontal_flip=True
 )
 
-# Rescaling only for Testing
+
 test_datagen = ImageDataGenerator(rescale=1./255)
 
-# Load Training Data
 train_generator = train_datagen.flow_from_directory(
     directory=TRAIN_DIR, 
     target_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
-    class_mode="binary"  # Binary classification: Benign vs Malignant
+    class_mode="binary" 
 )
 
-# Load Testing Data
+
 test_generator = test_datagen.flow_from_directory(
     directory=TEST_DIR, 
     target_size=IMG_SIZE,
@@ -63,11 +61,11 @@ test_generator = test_datagen.flow_from_directory(
     class_mode="binary"
 )
 
-# Print class labels
+
 print("Class Mapping:", train_generator.class_indices)
-# Display some sample images from dataset
+
 def plot_images(generator):
-    images, labels = next(generator)  # Get a batch
+    images, labels = next(generator)
     plt.figure(figsize=(10, 10))
     for i in range(9):
         plt.subplot(3, 3, i+1)
@@ -76,52 +74,51 @@ def plot_images(generator):
         plt.axis("off")
     plt.show()
 
-# Plot Training Images
+
 plot_images(train_generator)
-# Build the CNN model
+
 model = models.Sequential([
-    # 1st Convolution Block
+
     layers.Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
     layers.MaxPooling2D((2, 2)),
     
-    # 2nd Convolution Block
+
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # 3rd Convolution Block
+
     layers.Conv2D(128, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # Flattening Layer
+
     layers.Flatten(),
     
-    # Fully Connected Layers
+
     layers.Dense(512, activation='relu'),
-    layers.Dropout(0.5),  # Dropout to reduce overfitting
-    layers.Dense(1, activation='sigmoid')  # Output layer for binary classification
+    layers.Dropout(0.5),  
+    layers.Dense(1, activation='sigmoid')  
 ])
 
-# Compile the model
-model.compile(optimizer='adam',  # Optimizer for faster convergence
-              loss='binary_crossentropy',  # Binary classification loss
-              metrics=['accuracy'])  # Accuracy metric
 
-# Model Summary
+model.compile(optimizer='adam', 
+              loss='binary_crossentropy',  
+              metrics=['accuracy']) 
+
+
 model.summary()
 
-# EarlyStopping to stop training when the model stops improving
+
 early_stopping = EarlyStopping(
     monitor="val_loss",
-    patience=5,  # Stop training after 5 epochs with no improvement
+    patience=5,  
     restore_best_weights=True,
     verbose=1
 )
 
-# ReduceLROnPlateau to reduce the learning rate if the model stops improving
 lr_scheduler = ReduceLROnPlateau(
     monitor="val_loss",
     factor=0.3,
-    patience=3,  # Reduce LR if no improvement after 3 epochs
+    patience=3,
     min_lr=1e-7,
     verbose=1
 )
@@ -130,24 +127,23 @@ lr_scheduler = ReduceLROnPlateau(
 history = model.fit(
     train_generator,
     steps_per_epoch=train_generator.samples // BATCH_SIZE,
-    epochs=30,  # Set number of epochs to train the model
+    epochs=30,  
     validation_data=test_generator,
     validation_steps=test_generator.samples // BATCH_SIZE,
     callbacks=[early_stopping, lr_scheduler]
 )
-# EarlyStopping to stop training when the model stops improving
+
 early_stopping = EarlyStopping(
     monitor="val_loss",
-    patience=5,  # Stop training after 5 epochs with no improvement
+    patience=5,
     restore_best_weights=True,
     verbose=1
 )
 
-# ReduceLROnPlateau to reduce the learning rate if the model stops improving
 lr_scheduler = ReduceLROnPlateau(
     monitor="val_loss",
     factor=0.3,
-    patience=3,  # Reduce LR if no improvement after 3 epochs
+    patience=3,  
     min_lr=1e-7,
     verbose=1
 )
@@ -156,46 +152,36 @@ lr_scheduler = ReduceLROnPlateau(
 history = model.fit(
     train_generator,
     steps_per_epoch=train_generator.samples // BATCH_SIZE,
-    epochs=30,  # Set number of epochs to train the model
+    epochs=30, 
     validation_data=test_generator,
     validation_steps=test_generator.samples // BATCH_SIZE,
     callbacks=[early_stopping, lr_scheduler]
 )
-# Save Model
 model.save("skin_cancer_cnn.h5")
 
 model = load_model('skin_cancer_cnn.h5')
 
-# Save Model Weights
 model.save_weights("skin_cancer_cnn_weights.h5")
 
-# Load Model Weights
 model.load_weights("skin_cancer_cnn_weights.h5")
 
-# Plot Training History
 plt.plot(history.history["accuracy"], label="Train Accuracy")
 plt.plot(history.history["val_accuracy"], label="Validation Accuracy")
 plt.xlabel("Epochs")
 plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
-# Predict on the test set
 test_pred = model.predict(test_generator, steps=test_generator.samples // BATCH_SIZE, verbose=1)
 
-# Convert predictions to binary labels (0 or 1)
 test_pred_labels = (test_pred > 0.5).astype("int32")
 
-# Get the true labels
-test_true_labels = test_generator.classes[:len(test_pred_labels)]  # Match length to predictions
+test_true_labels = test_generator.classes[:len(test_pred_labels)]  
 
-# Classification report
 print("Classification Report:")
 print(classification_report(test_true_labels, test_pred_labels))
 
-# Confusion Matrix
 cm = confusion_matrix(test_true_labels, test_pred_labels)
 
-# Plot Confusion Matrix
 plt.figure(figsize=(6, 6))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=train_generator.class_indices.keys(), yticklabels=train_generator.class_indices.keys())
 plt.xlabel('Predicted')
@@ -205,17 +191,14 @@ plt.show()
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 
-# Load the entire model
 def predict_skin_cancer(image_path, model):
-    img = image.load_img(image_path, target_size=(224, 224))  # Load Image
-    img_array = image.img_to_array(img) / 255.0  # Normalize
-    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    img = image.load_img(image_path, target_size=(224, 224))  
+    img_array = image.img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)  
 
-    # Make Prediction
     prediction = model.predict(img_array)
     class_label = "Malignant" if prediction > 0.5 else "Benign"
     
-    # Show Image with Prediction
     plt.imshow(img)
     plt.title(f"Predicted: {class_label}")
     plt.axis("off")
